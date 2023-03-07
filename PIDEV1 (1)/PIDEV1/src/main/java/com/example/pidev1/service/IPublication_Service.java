@@ -46,6 +46,8 @@ public interface IPublication_Service {
 
     void sendSuperFanBadge(Student student) throws MessagingException;
 
+    List<Publication> getUninteractedPublications(Long studentId);
+
     ///// fonction que regroupe les publications interacted pour chaque etudiant
 
 

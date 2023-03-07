@@ -130,6 +130,12 @@ public class PublicationController {
         }
     }
 
+    //http://localhost:8089/pidev/Publication/{{id}}/uninteracted-publications
+    @GetMapping("/{id}/uninteracted-publications")
+    public List<Publication> getUninteractedPublications(@PathVariable Long id) {
+        return publication_service.getUninteractedPublications(id);
+    }
+
 
 
 

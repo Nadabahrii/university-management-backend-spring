@@ -2,6 +2,7 @@ package com.example.pidev1.service;
 
 
 import com.example.pidev1.entity.Comment;
+import com.example.pidev1.entity.ProfanityFilter;
 import com.example.pidev1.entity.Publication;
 
 import com.example.pidev1.entity.Student;
@@ -11,7 +12,6 @@ import lombok.AllArgsConstructor;
 import org.apache.commons.text.similarity.CosineDistance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -20,8 +20,9 @@ import org.springframework.stereotype.Service;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.transaction.Transactional;
-import java.io.File;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -35,8 +36,8 @@ public class Publication_Service implements IPublication_Service {
     private Student_Repository student_repository;
     @Autowired
     private JavaMailSender javaMailSender;
-    @Autowired
-    private ProfanityService profanityService;
+
+
 
 
     @Override
@@ -46,12 +47,15 @@ public class Publication_Service implements IPublication_Service {
 
     @Override
     public Publication addPublication(Publication publication) throws IOException {
-        if (profanityService.containsProfanity(publication.getContext())) {
-            throw new RuntimeException("The publication contains profanity.");
+        String content = publication.getContext();
+        ProfanityFilter profanityFilter = new ProfanityFilter("C:/Users/Mohamed/Desktop/bad_words.txt");
+        if (profanityFilter.containsProfanity(content)) {
+            throw new IllegalArgumentException("The publication contains profanity");
         } else {
             return publication_repository.save(publication);
         }
     }
+
     @Override
     public List<Publication> retrieveAllPosts() {
         return publication_repository.findAll();
@@ -282,6 +286,34 @@ public class Publication_Service implements IPublication_Service {
 
         javaMailSender.send(message);
     }
+    @Override
+    public List<Publication> getUninteractedPublications(Long studentId) {
+        Student student = student_repository.findById(studentId).get();
+        if (student == null) {
+            return null;
+        }
+
+        // Retrieve publications interacted with by the student
+        List<Publication> interactedPublications = getPublicationsInteractedByStudent(studentId);
+
+        // Find publications that have been interacted with by other students but not the input student
+        List<Publication> uninteractedPublications = new ArrayList<>();
+        List<Student> allStudents = student_repository.findAll();
+        for (Student otherStudent : allStudents) {
+            if (otherStudent.getIdStudent() != studentId) {
+                List<Publication> otherInteractedPublications = getPublicationsInteractedByStudent(otherStudent.getIdStudent());
+                for (Publication publication : otherInteractedPublications) {
+                    if (!interactedPublications.contains(publication) && !uninteractedPublications.contains(publication)) {
+                        uninteractedPublications.add(publication);
+                    }
+                }
+            }
+        }
+
+        return uninteractedPublications;
+    }
+
+
 
 
 

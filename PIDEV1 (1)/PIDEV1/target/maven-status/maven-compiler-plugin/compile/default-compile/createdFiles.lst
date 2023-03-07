@@ -12,6 +12,7 @@ com\example\pidev1\entity\Follow_upRequest.class
 com\example\pidev1\entity\Class.class
 com\example\pidev1\entity\Host.class
 com\example\pidev1\service\Comment_Service.class
+com\example\pidev1\repository\Student_Repository.class
 com\example\pidev1\entity\Request.class
 com\example\pidev1\service\IComment_Service.class
 com\example\pidev1\entity\Rdv.class
