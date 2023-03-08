@@ -1,6 +1,6 @@
-package com.example.pidev1.repository;
+package com.example.pidev1.Repository;
 
-import com.example.pidev1.entity.Department;
+import com.example.pidev1.Entity.Department;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
