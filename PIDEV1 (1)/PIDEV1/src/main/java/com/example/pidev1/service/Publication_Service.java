@@ -8,6 +8,7 @@ import com.example.pidev1.entity.Publication;
 import com.example.pidev1.entity.Student;
 import com.example.pidev1.repository.Publication_Repository;
 import com.example.pidev1.repository.Student_Repository;
+
 import lombok.AllArgsConstructor;
 import org.apache.commons.text.similarity.CosineDistance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,14 +16,15 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-
+import com.twilio.rest.api.v2010.account.Message;
+import com.twilio.type.PhoneNumber;
+import org.springframework.beans.factory.annotation.Value;
+import com.twilio.Twilio;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.transaction.Transactional;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -37,6 +39,27 @@ public class Publication_Service implements IPublication_Service {
     @Autowired
     private JavaMailSender javaMailSender;
 
+
+    private String ACCOUNT_SID;
+    private String AUTH_TOKEN;
+    private String TWILIO_PHONE_NUMBER;
+
+    @Autowired
+    public Publication_Service(@Value("${twilio.accountSid}") String accountSid,
+                               @Value("${twilio.authToken}") String authToken,
+                               @Value("${twilio.phoneNumber}") String twilioPhoneNumber) {
+        this.ACCOUNT_SID = accountSid;
+        this.AUTH_TOKEN = authToken;
+        this.TWILIO_PHONE_NUMBER = twilioPhoneNumber;
+    }
+    @Override
+    public void sendSMSNotification(String toPhoneNumber, String message) {
+        // Set up the Twilio client
+        Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
+
+        // Send the SMS message
+        Message.creator(new PhoneNumber(toPhoneNumber), new PhoneNumber(TWILIO_PHONE_NUMBER), message).create();
+    }
 
 
 
@@ -165,17 +188,29 @@ public class Publication_Service implements IPublication_Service {
     public Publication likePublication(Long idPub, Long studentId) {
         Publication publication = publication_repository.findById(idPub).get();
         if (publication != null) {
+            // Save the list of students who liked the publication before the update
+            Set<Student> oldLikedByStudents = new HashSet<>(publication.getLikedByStudents());
             publication.setNbr_likes_Pub(publication.getNbr_likes_Pub() + 1);
             publication.setRating(calculateRating(publication));
             // Add the student's information to the publication
             Student student = student_repository.findById(studentId).get();
             if (student != null) {
                 publication.getLikedByStudents().add(student);
+                publication_repository.save(publication);
+                // Send SMS notifications to old likers
+                for (Student oldLiker : oldLikedByStudents) {
+                    if (!oldLiker.equals(student)) {
+                        sendSMSNotification(oldLiker.getContact(), "New like on publication " + publication.getIdPub() + " by " + student.getFirstname());
+                    }
+                }
+
             }
-            publication_repository.save(publication);
         }
         return publication;
     }
+
+
+
     @Transactional
     public Publication dislikePublication(Long idPub, Long studentId) {
         Publication publication = publication_repository.findById(idPub).get();
@@ -286,6 +321,12 @@ public class Publication_Service implements IPublication_Service {
 
         javaMailSender.send(message);
     }
+
+
+
+
+
+
     @Override
     public List<Publication> getUninteractedPublications(Long studentId) {
         Student student = student_repository.findById(studentId).get();
@@ -312,6 +353,7 @@ public class Publication_Service implements IPublication_Service {
 
         return uninteractedPublications;
     }
+
 
 
 

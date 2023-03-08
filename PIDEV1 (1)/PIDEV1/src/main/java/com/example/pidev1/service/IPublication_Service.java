@@ -10,6 +10,8 @@ import java.util.List;
 public interface IPublication_Service {
 
 
+    void sendSMSNotification(String toPhoneNumber, String message);
+
     Publication getPublicationById(Long id);
 
     Publication addPublication(Publication publication) throws IOException;
