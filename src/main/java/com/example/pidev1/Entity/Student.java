@@ -1,4 +1,4 @@
-package com.example.pidev1.entity;
+package com.example.pidev1.Entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,6 +26,8 @@ public class Student implements Serializable {
     private String Address;
     private String Contact;
     private Long Age;
+    private String hobby;
+
 
     @ManyToMany(cascade = CascadeType.ALL)
     private Set<Class> classSet;

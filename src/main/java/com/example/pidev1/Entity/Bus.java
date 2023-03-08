@@ -1,4 +1,4 @@
-package com.example.pidev1.entity;
+package com.example.pidev1.Entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,16 +14,26 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table( name = "Host")
-public class Host implements Serializable {
+@Table( name = "Bus")
+public class Bus implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="idH")
-    private Long idH;
-    private String name;
-    private Long NBEtage;
-    private Long NBChambre;
+    @Column(name="idBus")
+    private Long idBus;
+    private String Traject;
+    private String Driver;
+    private String Capacity;
+    private String Status;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy="host")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy="bus")
     private Set<Student> students;
+
+
+
+
+
+
+
+
+
 }

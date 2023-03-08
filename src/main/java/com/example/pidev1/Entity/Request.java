@@ -1,4 +1,4 @@
-package com.example.pidev1.entity;
+package com.example.pidev1.Entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

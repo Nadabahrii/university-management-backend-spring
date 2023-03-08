@@ -1,4 +1,4 @@
-package com.example.pidev1.entity;
+package com.example.pidev1.Entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,17 +14,16 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table( name = "Class")
-public class Class implements Serializable {
+@Table( name = "Host")
+public class Host implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="idClass")
-    private Long idClass;
-    private String Name;
+    @Column(name="idH")
+    private Long idH;
+    private String name;
+    private Long NBEtage;
+    private Long NBChambre;
 
-    @ManyToMany(mappedBy="classes", cascade = CascadeType.ALL)
-    private Set<Employers> employers;
-
-    @ManyToMany(mappedBy="classSet", cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy="host")
     private Set<Student> students;
 }
