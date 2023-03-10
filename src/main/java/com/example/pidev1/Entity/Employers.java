@@ -21,6 +21,7 @@ public class Employers implements Serializable {
     private String Firstname;
     private String Lastname;
     private String Email;
+    private Boolean isDispo;
     private String Address;
     private String Contact;
     private Long Age;
@@ -38,4 +39,7 @@ public class Employers implements Serializable {
 
     @ManyToMany(cascade = CascadeType.ALL)
     private Set<Department> departments;
+
+    @ManyToOne
+    Subject subject;
 }
