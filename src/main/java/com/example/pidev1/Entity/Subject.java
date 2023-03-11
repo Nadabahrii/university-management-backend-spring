@@ -21,7 +21,7 @@ public class Subject implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="idSubject")
     private Long idSubject;
-    private String name;
+    private String Subjectname;
 
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy="subject")

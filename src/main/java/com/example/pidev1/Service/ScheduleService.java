@@ -6,6 +6,7 @@ import com.example.pidev1.Repository.ScheduleRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,12 +60,11 @@ public class ScheduleService {
             coursPlanifie.setEmployer(enseignantDisponible);
             coursPlanifie.setClassroom(salleDisponible);
             coursPlanifie.setSubject(subject);
+            coursPlanifie.setStart(LocalTime.of(8,00));
+            coursPlanifie.setEnd((LocalTime.MAX.plusHours(10)));
            // lessonRepo.save(coursPlanifie);
 
             LessonPlanifies.add(coursPlanifie);
-
-
-
 
 
         }

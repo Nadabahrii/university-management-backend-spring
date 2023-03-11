@@ -27,6 +27,8 @@ public class Student implements Serializable {
     private String Contact;
     private Long Age;
     private String hobby;
+    @Column(nullable = false, columnDefinition = "int default 10")
+    private int credie;
 
 
     @ManyToMany(cascade = CascadeType.ALL)

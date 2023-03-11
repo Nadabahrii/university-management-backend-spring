@@ -23,4 +23,8 @@ public class LessonService {
         }
         return coursEnregistres;
     }
+
+    public List<Lesson> getall(){
+        return lessonRepo.findAll();
+    }
 }

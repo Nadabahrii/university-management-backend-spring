@@ -24,16 +24,20 @@ public class Lesson implements Serializable {
     private LocalTime end;
 
     @ManyToOne
+    //@JoinColumn(name="Firstname",referencedColumnName="firstname", insertable=false, updatable=false)
     private Employers employer;
 
     @ManyToOne
+    //@JoinColumn(name="name",referencedColumnName="name", insertable=false, updatable=false)
     private classroom classroom;
 
     @ManyToOne
+    //@JoinColumn(name="Subjectname",referencedColumnName="subjectname", insertable=false, updatable=false)
     private Subject subject;
 
     @ManyToOne
     Schedule schedule;
+
 
 
 }
