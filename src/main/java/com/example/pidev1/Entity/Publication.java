@@ -1,5 +1,6 @@
 package com.example.pidev1.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,13 +29,20 @@ public class Publication implements Serializable {
     private Date date_of_publication;
     private long nbr_likes_Pub;
     private long nbr_dislikes_Pub;
+    private double rating;
 
+    @JsonIgnore
     @ManyToOne
     Student students;
-
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy="publication")
     private Set<Comment> comments;
-
+    @JsonIgnore
+    @ManyToMany(cascade = CascadeType.ALL)
+    private Set<Student> likedByStudents;
+    @JsonIgnore
+    @ManyToMany(cascade = CascadeType.ALL)
+    private Set<Student> dislikedByStudents;
 
 
 
