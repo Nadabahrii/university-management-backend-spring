@@ -20,6 +20,7 @@ public interface AbsenceRepo extends JpaRepository<Absence,Long> {
 
     int countByStudent(Student student);
 
-    void deleteAbsenceByStudent(Student student);
+
+
 
 }

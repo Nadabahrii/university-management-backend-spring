@@ -78,6 +78,11 @@ public class AbsenceServices {
             }
        // absenceRepo.deleteAbsenceByStudent(student);
 
+        List<Absence> L = absenceRepo.findByStudent(student);
+            for(Absence a : L){
+                absenceRepo.deleteById(a.getIdAbsence());
+            }
+
 
 
             return student;

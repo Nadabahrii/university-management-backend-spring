@@ -28,15 +28,16 @@ public class Lesson implements Serializable {
     private Employers employer;
 
     @ManyToOne
-    //@JoinColumn(name="name",referencedColumnName="name", insertable=false, updatable=false)
     private classroom classroom;
 
     @ManyToOne
-    //@JoinColumn(name="Subjectname",referencedColumnName="subjectname", insertable=false, updatable=false)
     private Subject subject;
 
     @ManyToOne
     Schedule schedule;
+
+    @ManyToOne
+    Class aClass;
 
 
 
