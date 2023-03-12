@@ -23,6 +23,7 @@ public class Schedule implements Serializable {
     private Long idSchedule;
 
     @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL)
+   // @JsonIgnore
     private List<Lesson> lessons;
 
 

@@ -6,6 +6,7 @@ import com.example.pidev1.Repository.ScheduleRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +30,7 @@ public class ScheduleService {
     @Autowired
     ScheduleRepo scheduleRepo;
 
+    @Transactional
     public Schedule planifier(List<Employers> employerDisponibles, List<classroom> classroomDisponibles, List<Subject> subjects) {
         Schedule schedule = new Schedule();
 
@@ -51,22 +53,19 @@ public class ScheduleService {
                 if (salle.getCapacity() >= 20) {
                     salleDisponible = salle;
                     break;
-                }
+               }
+               // salleDisponible = classroomDisponibles.stream().findAny().get();
             }
 
             // Créer le cours et l'ajouter à la liste des cours planifiés
-            //Lesson coursPlanifie = new Lesson(enseignantDisponible, salleDisponible, subject);
             Lesson coursPlanifie = new Lesson();
             coursPlanifie.setEmployer(enseignantDisponible);
             coursPlanifie.setClassroom(salleDisponible);
             coursPlanifie.setSubject(subject);
+            coursPlanifie.setAClass(enseignantDisponible.getClasses().stream().findAny().get());
             coursPlanifie.setStart(LocalTime.of(8,00));
             coursPlanifie.setEnd((LocalTime.MAX.plusHours(10)));
-           // lessonRepo.save(coursPlanifie);
-
             LessonPlanifies.add(coursPlanifie);
-
-
         }
         // Enregistrer tous les cours planifiés dans la base de données
         lessonService.saveAllCours(LessonPlanifies);
@@ -74,6 +73,10 @@ public class ScheduleService {
 
         schedule.setLessons(LessonPlanifies);
         scheduleRepo.save(schedule);
+        for(Lesson l : LessonPlanifies){
+            l.setSchedule(schedule);
+        }
+        lessonService.saveAllCours(LessonPlanifies);
 
         return schedule;
     }

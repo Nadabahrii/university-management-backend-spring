@@ -1,5 +1,6 @@
 package com.example.pidev1.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -32,6 +33,7 @@ public class Employers implements Serializable {
     private Set<Class>classes;
 
     @OneToOne(mappedBy="employers")
+    @JsonIgnore
     private Request request;
 
     @OneToOne

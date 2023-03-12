@@ -1,5 +1,6 @@
 package com.example.pidev1.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,6 +35,7 @@ public class Lesson implements Serializable {
     private Subject subject;
 
     @ManyToOne
+    @JsonIgnore
     Schedule schedule;
 
     @ManyToOne

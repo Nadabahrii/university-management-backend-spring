@@ -45,4 +45,11 @@ public class ClassService implements IClass{
         classRepo.deleteById(idClass);
 
     }
+
+    public int count(Long idClass){
+        Class c = classRepo.findById(idClass).get();
+        List<Class> L = classRepo.findByStudents(c);
+        int s = L.size();
+        return  s;
+    }
 }

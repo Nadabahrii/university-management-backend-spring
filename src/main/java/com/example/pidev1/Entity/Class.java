@@ -1,5 +1,6 @@
 package com.example.pidev1.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,8 +24,10 @@ public class Class implements Serializable {
     private String Name;
 
     @ManyToMany(mappedBy="classes", cascade = CascadeType.ALL)
-    private Set<Employers> employers;
+    @JsonIgnore
+    private Set<Employers> employerss;
 
     @ManyToMany(mappedBy="classSet", cascade = CascadeType.ALL)
+    @JsonIgnore
     private Set<Student> students;
 }
