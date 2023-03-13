@@ -17,7 +17,7 @@ import java.util.Map;
 public class QRCodeGenerator {
 
     public static final int QR_CODE_SIZE = 300;
-    public BitMatrix generateQRCode(String content) throws WriterException {
+    public static BitMatrix generateQRCode(String content) throws WriterException {
         Map<EncodeHintType, Object> hintMap = new HashMap<>();
         hintMap.put(EncodeHintType.MARGIN, 0);
         hintMap.put(EncodeHintType.CHARACTER_SET, "UTF-8");

@@ -204,7 +204,7 @@ public class EventController {
         eventRepository.save(event);
         studentRepository.save(student);
 
-        String message = String.format("Student %s has successfully been added to the event (IdEvent: %d)", student.getFirstname() + " " + student.getLastname(), eventId);
+        String message = String.format("Student %s has successfully been participated to the event with IdEvent: %d", student.getFirstname() + " " + student.getLastname(), eventId);
 
         // Generate QR code
         String content = "Participation: " + message;

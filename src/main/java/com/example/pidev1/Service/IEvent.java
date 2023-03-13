@@ -3,8 +3,10 @@ package com.example.pidev1.Service;
 import com.example.pidev1.Entity.Event;
 import com.example.pidev1.Entity.Student;
 import com.example.pidev1.Repository.EventRepository;
+import com.google.zxing.WriterException;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfPTable;
+import org.springframework.http.ResponseEntity;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -41,7 +43,7 @@ public interface IEvent {
 
     Event affecterimagetoevent(Long Idevent,Long Idimage);
 
-    Student participertoevent(Long idevent, Long idstudent);
+    ResponseEntity<byte[]> participertoevent(Long idevent, Long idstudent) throws IOException, WriterException;
 
 
 
