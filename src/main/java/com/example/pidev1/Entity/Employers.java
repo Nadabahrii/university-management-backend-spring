@@ -1,5 +1,6 @@
 package com.example.pidev1.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -21,6 +22,7 @@ public class Employers implements Serializable {
     private String Firstname;
     private String Lastname;
     private String Email;
+    private Boolean isDispo;
     private String Address;
     private String Contact;
     private Long Age;
@@ -31,6 +33,7 @@ public class Employers implements Serializable {
     private Set<Class>classes;
 
     @OneToOne(mappedBy="employers")
+    @JsonIgnore
     private Request request;
 
     @OneToOne
@@ -38,4 +41,7 @@ public class Employers implements Serializable {
 
     @ManyToMany(cascade = CascadeType.ALL)
     private Set<Department> departments;
+
+    @ManyToOne
+    Subject subject;
 }
