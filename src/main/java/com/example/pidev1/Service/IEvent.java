@@ -1,6 +1,7 @@
 package com.example.pidev1.Service;
 
 import com.example.pidev1.Entity.Event;
+import com.example.pidev1.Entity.Student;
 import com.example.pidev1.Repository.EventRepository;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfPTable;
@@ -37,6 +38,10 @@ public interface IEvent {
     //void decrementPlaces();
 
     double estimateBudget(String eventType, int numAttendees, boolean needMaterials, String location);
+
+    Event affecterimagetoevent(Long Idevent,Long Idimage);
+
+    Student participertoevent(Long idevent, Long idstudent);
 
 
 
