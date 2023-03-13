@@ -1,24 +1,26 @@
 package com.example.pidev1.Entity;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import javax.persistence.*;
 
+
 @Entity
-@NoArgsConstructor
+@Table(name = "FILE_DATA")
+@Data
 @AllArgsConstructor
-@Getter
-@Setter
-public class Photo {
+@NoArgsConstructor
+@Builder
+public class FileData {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String url;
-
-    @OneToOne(mappedBy = "photo")
-    private Event event;
+    private String name;
+    private String type;
+    private String filePath;
 }
