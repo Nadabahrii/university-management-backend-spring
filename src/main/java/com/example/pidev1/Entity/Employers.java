@@ -36,8 +36,8 @@ public class Employers implements Serializable {
     @JsonIgnore
     private Request request;
 
-    @OneToOne
-    private Rdv rdv;
+    @OneToMany(mappedBy = "employer")
+    private Set<Rdv> rdv;
 
     @ManyToMany(cascade = CascadeType.ALL)
     private Set<Department> departments;

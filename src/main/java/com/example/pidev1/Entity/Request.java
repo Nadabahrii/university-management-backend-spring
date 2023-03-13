@@ -21,6 +21,11 @@ public class Request implements Serializable {
     private Long idRequest;
     @Enumerated(EnumType.STRING)
     private Follow_upRequest follow_upRequest;
+    private String startTime;
+
+    private String endTime;
+
+    private int numAttendees;
 
     @OneToOne
     private Employers employers;

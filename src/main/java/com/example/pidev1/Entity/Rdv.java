@@ -19,10 +19,23 @@ public class Rdv implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="idRdv")
     private Long idRdv;
-    private String Name;
-
+    private String startTime;
+    private String endTime;
+    @Enumerated(value = EnumType.STRING)
+    private CandidateType candidateType;
+    @ManyToOne
+    @JoinColumn(name = "idClass")
+    private Class classe;
     @ManyToOne
     Student studentt;
+    @ManyToOne
+    Professeur professeur;
+    @ManyToOne
+    Employers employer;
+
+
+    public Rdv(String startTime, String endTime) {
+    }
 
 
 }

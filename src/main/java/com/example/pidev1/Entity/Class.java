@@ -8,6 +8,8 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -31,4 +33,7 @@ public class Class implements Serializable {
     @ManyToMany(mappedBy="classSet", cascade = CascadeType.ALL)
     @JsonIgnore
     private Set<Student> students;
+
+    @OneToMany(mappedBy = "classe", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Rdv> rdvs = new ArrayList<>();
 }
