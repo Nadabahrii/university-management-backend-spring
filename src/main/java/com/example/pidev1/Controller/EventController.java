@@ -8,6 +8,10 @@ import com.example.pidev1.Repository.StudentRepository;
 import com.example.pidev1.Service.EventPDFExporter;
 import com.example.pidev1.Service.EventService;
 import com.example.pidev1.Service.IEvent;
+import com.example.pidev1.Service.QRCodeGenerator;
+import com.google.zxing.WriterException;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
 import com.lowagie.text.DocumentException;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +23,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -41,6 +47,9 @@ public class EventController {
     //private final EventRepository eventRepository;
 
     @Autowired
+    private QRCodeGenerator qrCodeGenerator;
+
+    @Autowired
     public EventController(EventRepository eventRepository) {
         this.eventRepository = eventRepository;
     }
@@ -53,12 +62,12 @@ public class EventController {
         Event e = eventService.addEvent(event);
         return e;
     }*/
-
+    //http://localhost:8089/pidev/addEvent
     @PostMapping("/addEvent")
     public ResponseEntity<Event> addEvent(@RequestBody Event event) {
         try {
             Event savedEvent = eventService.addEvent(event);
-            sendMail(savedEvent);
+           // sendMail(savedEvent);
             return new ResponseEntity<>(savedEvent, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -90,85 +99,12 @@ public class EventController {
         }
     }*/
 
-    public void sendMail(Event event) {
-        // Check if the event type is defined
-        String eventType = event.getType();
-
-        if (eventType == null) {
-            System.out.println("No email will be sent since the event type is not defined");
-            return;
-        }
-
-        // Find students with matching hobbies
-                /*List<Student> matchingStudents = event.getStudents().stream()
-                        .filter(student -> eventType.equalsIgnoreCase(student.getHobby()))
-                        .collect(Collectors.toList());
-                System.out.println("Number of matching students found: " + matchingStudents.size());*/
-        List<Student> students = studentRepository.findAll();
-        List<Student> matchingStudents=null;
-        for (Student s :students){
-            if(s.getHobby().equals(eventType))
-                matchingStudents.add(s);
-        }
-
-
-
-        // Check if any matching students were found
-        if (matchingStudents.isEmpty()) {
-            System.out.println("No email will be sent since there are no students with a matching hobby");
-            return;
-        }
-
-        // Send an email to each matching student
-        for (Student student : matchingStudents) {
-            String toEmail = student.getEmail();
-            String subject = String.format("New %s event added", eventType);
-            String body = String.format("Dear %s,\n\nA new %s event named \"%s\" has been added. Don't miss it!\n\nBest regards,\nThe event team",
-                    student.getFirstname(), eventType, event.getNameEvent());
-            sendEmail(toEmail, subject, body);
-        }
-    }
-
-
-    /*public void sendMail(Event event) {
-        // Vérifier si l'événement est de type "sport"
-        String eventType = event.getType();
-        if (eventType == null) {
-            System.out.println("No email will be sent since the event type is not defined");
-            return;
-        }
-
-        // Récupérer les étudiants qui ont un hobby correspondant à l'événement
-        List<Student> matchingStudents = event.getStudents().stream()
-                .filter(student -> eventType.equalsIgnoreCase(student.getHobby()))
-                .collect(Collectors.toList());
-
-        // Vérifier si des étudiants avec un hobby correspondant ont été trouvés
-        if (matchingStudents.isEmpty()) {
-            System.out.println("No email will be sent since there are no students with a matching hobby");
-            return;
-        }
-
-        // Envoyer un email à chaque étudiant avec un hobby correspondant
-        for (Student student : matchingStudents) {
-            String to = student.getEmail();
-            String subject = String.format("New %s event added", eventType);
-            String body = String.format("Dear %s,\n\nA new %s event named \"%s\" has been added. Don't miss it!\n\nBest regards,\nThe event team",
-                    student.getFirstname(), eventType, event.getNameEvent());
-            sendEmail(to, subject, body);
-        }
-    }*/
 
     @GetMapping("/retrieve-all-events")
     public List<Event> getevent () {
         List<Event> listevent = eventService.retrieveAllevents();
         return listevent;
     }
-
-    /*public List<Student> getmatchingStudents () {
-        List<Student> listmatching = eventService.retrieveAllmatchingStudents();
-        return listmatching;
-    }*/
 
     //http://localhost:8089/pidev/retrieve-event/{{event-id}}
     @GetMapping("/retrieve-event/{idevent}")
@@ -207,13 +143,7 @@ public class EventController {
     }
 
 
-    @PostMapping("/sendEmail")
-    public ResponseEntity<String> sendEmail(@RequestParam String toEmail,
-                                            @RequestParam String subject,
-                                            @RequestParam String body) {
-        eventService.sendEmail(toEmail, subject, body);
-        return ResponseEntity.ok("Email sent successfully!");
-    }
+
 
     /*@PostMapping("/sendMail")
     public ResponseEntity<String> sendMail(@RequestBody Event event) {
@@ -257,10 +187,39 @@ public class EventController {
         {
             eventService.affecterimagetoevent(idevent,idimage);
         }
-    @PutMapping("/participertoevent/{event-id}/{student-id}")
-        public void participertoevent(@PathVariable("event-id") Long idevent,@PathVariable("student-id") Long idstudent)
-    {
-        eventService.participertoevent(idevent,idstudent);
+    /*@PostMapping("/{eventId}/students/{studentId}")
+    public ResponseEntity<Student> participateToEvent(@PathVariable Long eventId, @PathVariable Long studentId) {
+        Student student = eventService.participertoevent(eventId, studentId);
+        return ResponseEntity.ok(student);
+    }*/
+
+    @PostMapping("/events/{eventId}/participants/{studentId}")
+    public ResponseEntity<byte[]> addParticipantToEvent(@PathVariable Long eventId, @PathVariable Long studentId) throws WriterException {
+        Event event = eventRepository.findById(eventId).get();
+        Student student = studentRepository.findById(studentId).get();
+
+        event.getStudents().add(student);
+        student.getEvents().add(event);
+
+        eventRepository.save(event);
+        studentRepository.save(student);
+
+        String message = String.format("Student %s has successfully been added to the event (IdEvent: %d)", student.getFirstname() + " " + student.getLastname(), eventId);
+
+        // Generate QR code
+        String content = "Participation: " + message;
+        BitMatrix bitMatrix = qrCodeGenerator.generateQRCode(content);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        try {
+            MatrixToImageWriter.writeToStream(bitMatrix, "PNG", outputStream);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        byte[] bytes = outputStream.toByteArray();
+        String base64Encoded = Base64.getEncoder().encodeToString(bytes);
+
+        return ResponseEntity.ok().body(bytes);
     }
 
 

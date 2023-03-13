@@ -9,6 +9,10 @@ import com.example.pidev1.Repository.EventRepository;
 import com.example.pidev1.Repository.FileDataRepository;
 import com.example.pidev1.Repository.StorageRepository;
 import com.example.pidev1.Repository.StudentRepository;
+import com.google.zxing.NotFoundException;
+import com.google.zxing.WriterException;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
 import com.lowagie.text.*;
 import com.lowagie.text.Font;
 import com.lowagie.text.pdf.PdfPCell;
@@ -17,6 +21,8 @@ import com.lowagie.text.pdf.PdfWriter;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -26,13 +32,12 @@ import javax.mail.Session;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.*;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.Date;
-import java.util.HashSet;
+import java.util.*;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -61,7 +66,6 @@ public class EventService implements IEvent {
         public List<Event> retrieveAllevents() {
                 return eventRepository.findAll();
         }
-
         @Override
         public Event addEvent(Event event) throws Exception {
                 Date currentDate = new Date();
@@ -69,9 +73,28 @@ public class EventService implements IEvent {
                         throw new Exception("Event date cannot be in the past");
                 }
                 Event savedEvent = eventRepository.save(event);
-                //sendMail(savedEvent);
+
+                List<Student> students = studentRepository.findAll();
+                //List<Student> matchingStudents=null;
+                for (Student s :students){
+                        if(s.getHobby().equals(event.getType()))
+                        {
+                                        String toEmail = s.getEmail();
+                                        String subject = String.format("New %s event added", event.getType());
+                                        String body = String.format("Dear %s,\n\nA new %s event named \"%s\" has been added. Don't miss it!\n\nBest regards,\nThe event team",
+                                                s.getFirstname(), event.getType(), event.getNameEvent());
+                                        sendEmail(toEmail, subject, body);
+
+                        }
+
+                }
                 return savedEvent;
-        }//sendMail(savedEvent);
+        }
+
+        private void sendEmail(String email, Event event) {
+                // implement email sending logic here
+        }
+        //sendMail(savedEvent);
         //System.out.println("Event saved and email sent successfully.");
         @Autowired
         public EventService(EventRepository eventRepository, StudentRepository studentRepository) {
@@ -138,12 +161,13 @@ public class EventService implements IEvent {
         }
 
 
+        @Override
         public void sendEmail(String toEmail,
                               String subject,
                               String body
         ) {
                 SimpleMailMessage message = new SimpleMailMessage();
-                message.setFrom("iheb.benslama1999@gmail.com");
+                message.setFrom("mohamed.dhokkar@esprit.tn");
                 message.setTo(toEmail);
                 message.setText(body);
                 message.setSubject(subject);
@@ -153,6 +177,7 @@ public class EventService implements IEvent {
 
         }
 
+        @Override
         public void sendMail(Event event) {
                 // Check if the event type is defined
                 String eventType = event.getType();
@@ -163,12 +188,12 @@ public class EventService implements IEvent {
                 }
 
                 // Find students with matching hobbies
-                /*List<Student> matchingStudents = event.getStudents().stream()
+                List<Student> matchingStudents = event.getStudents().stream()
                         .filter(student -> eventType.equalsIgnoreCase(student.getHobby()))
                         .collect(Collectors.toList());
-                System.out.println("Number of matching students found: " + matchingStudents.size());*/
+                System.out.println("Number of matching students found: " + matchingStudents.size());
                 List<Student> students = studentRepository.findAll();
-                List<Student> matchingStudents=null;
+                //List<Student> matchingStudents=null;
                 for (Student s :students){
                         if(s.getHobby().equals(eventType))
                                 matchingStudents.add(s);
@@ -250,15 +275,45 @@ public class EventService implements IEvent {
                 }
 
 
-                public Student participertoevent(Long idevent,Long idstudent){
+        /*public Student participertoevent(Long idevent, Long idstudent) {
                 Event e = eventRepository.findById(idevent).get();
                 Student s = studentRepository.findById(idstudent).get();
-                //e.getStudents().add(s);
+                e.getStudents().add(s);
                 s.getEvents().add(e);
-                //eventRepository.save(e);
-                        return  s;
-                }
+                eventRepository.save(e);
+                studentRepository.save(s);
+                return s;
+        }*/
+
+        public ResponseEntity<byte[]> participertoevent(Long idevent, Long idstudent) throws IOException, WriterException {
+                Event e = eventRepository.findById(idevent).get();
+                Student s = studentRepository.findById(idstudent).get();
+                // Add the student to the event's list of participants
+                Participation participation = new Participation();
+                participation.setNameP(s.getFirstname() + " " + s.getLastname());
+                participation.setEmailP(s.getEmail());
+                participation.setEvents(Collections.singleton(e));
+                e.getParticipations().add(participation);
+
+                // Update the student's list of events
+                s.getEvents().add(e);
+                studentRepository.save(s);
+
+                // Generate the QR code with the participation information
+                String content = "Student " + s.getFirstname() + " " + s.getLastname() + " has successfully participated in event " + idevent;
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                BitMatrix bitMatrix = QRCodeGenerator.generateQRCode(content);
+                MatrixToImageWriter.writeToStream(bitMatrix, "PNG", outputStream);
+
+                byte[] bytes = outputStream.toByteArray();
+                String base64Encoded = Base64.getEncoder().encodeToString(bytes);
+
+                // Return the QR code image as a response
+                return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(bytes);
         }
+
+
+}
 
 
         /*public void participateInEvent(Long eventId) {
