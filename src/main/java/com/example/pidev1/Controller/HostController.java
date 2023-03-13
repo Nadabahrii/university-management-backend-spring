@@ -5,6 +5,7 @@ import com.example.pidev1.Entity.Host;
 import com.example.pidev1.Service.HostService;
 import com.example.pidev1.Service.IHost;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,6 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 public class HostController {
 
+   @Autowired
     HostService hostService;
     IHost iHost;
     @PostMapping("/add-Host")
