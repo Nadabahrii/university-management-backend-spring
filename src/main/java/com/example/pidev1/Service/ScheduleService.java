@@ -55,7 +55,7 @@ public class ScheduleService {
             classroom salleDisponible = null;
             for (classroom salle : classroomDisponibles) {
                 if (salle.getCapacity() >= 20) {
-                    salleDisponible = classroomDisponibles.stream().findAny().get();
+                    salleDisponible = salle;
                     salleDisponible.setIsDispo(false);
                     break;
                }
