@@ -19,11 +19,11 @@ import java.util.stream.Collectors;
 public class EventService implements IEvent {
     @Autowired
     private EventRepository eventRepository;
-
+/*
     @Autowired
     private JavaMailSender mailSender;
 
-
+*/
     @Autowired
     private StudentRepository studentRepository;
 
@@ -90,7 +90,7 @@ public class EventService implements IEvent {
         message.setTo(toEmail);
         message.setText(body);
         message.setSubject(subject);
-        mailSender.send(message);
+        //mailSender.send(message);
         System.out.println("Mail Send...");
 
 

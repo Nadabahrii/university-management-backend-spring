@@ -23,6 +23,7 @@ import java.util.List;
 @AllArgsConstructor
 @RequestMapping("/Publication")
 public class PublicationController {
+    @Autowired
     Publication_Service publication_service;
     @Autowired
     private Publication_Repository publication_repository;
