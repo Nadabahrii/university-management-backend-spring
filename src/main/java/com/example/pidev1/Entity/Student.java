@@ -37,7 +37,6 @@ public class Student implements Serializable {
     @JsonIgnore
     @ManyToMany(cascade = CascadeType.ALL)
     private Set<Department> departments;
-    @JsonIgnore
     @OneToOne(mappedBy="student")
     @JsonIgnore
     private Request requests;
@@ -50,15 +49,15 @@ public class Student implements Serializable {
 
     @ManyToOne
     Bus bus;
-    @JsonIgnore
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy="students")
     @JsonIgnore
     private Set<Publication> publications;
-    @JsonIgnore
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy="studentss")
     @JsonIgnore
     private Set<Comment> comments;
-    @JsonIgnore
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy="studentt")
     @JsonIgnore
     private Set<Rdv> rdvs;
