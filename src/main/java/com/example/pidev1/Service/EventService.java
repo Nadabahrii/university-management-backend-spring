@@ -50,8 +50,7 @@ public class EventService implements IEvent {
 
         @Autowired
         private JavaMailSender mailSender;
-
-
+        
         @Autowired
         private StudentRepository studentRepository;
 

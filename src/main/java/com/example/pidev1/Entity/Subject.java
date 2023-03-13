@@ -15,20 +15,16 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table( name = "Class")
-public class Class implements Serializable {
+@Table( name = "Subject")
+public class Subject implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="idClass")
-    private Long idClass;
-    private String Name;
-    private Long Capacity;
+    @Column(name="idSubject")
+    private Long idSubject;
+    private String Subjectname;
 
-    @ManyToMany(mappedBy="classes", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private Set<Employers> employerss;
 
-    @ManyToMany(mappedBy="classSet", cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy="subject")
     @JsonIgnore
-    private Set<Student> students;
+    private Set<Employers> employers;
 }

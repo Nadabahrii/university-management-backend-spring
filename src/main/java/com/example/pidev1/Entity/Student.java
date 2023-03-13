@@ -1,5 +1,6 @@
 package com.example.pidev1.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,6 +28,8 @@ public class Student implements Serializable {
     private String Contact;
     private Long Age;
     private String hobby;
+    @Column(nullable = false, columnDefinition = "int default 10")
+    private int credie;
 
 
     @ManyToMany(cascade = CascadeType.ALL)
@@ -36,6 +39,7 @@ public class Student implements Serializable {
     private Set<Department> departments;
 
     @OneToOne(mappedBy="student")
+    @JsonIgnore
     private Request requests;
 
     @ManyToMany(cascade = CascadeType.ALL)
@@ -48,12 +52,15 @@ public class Student implements Serializable {
     Bus bus;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy="students")
+    @JsonIgnore
     private Set<Publication> publications;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy="studentss")
+    @JsonIgnore
     private Set<Comment> comments;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy="studentt")
+    @JsonIgnore
     private Set<Rdv> rdvs;
 
 
