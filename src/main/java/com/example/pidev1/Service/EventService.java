@@ -52,7 +52,9 @@ public class EventService implements IEvent {
         private JavaMailSender mailSender;
 
 
+
         
+
         @Autowired
         private StudentRepository studentRepository;
 

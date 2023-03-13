@@ -1,5 +1,6 @@
 package com.example.pidev1.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,10 +27,10 @@ public class Comment implements Serializable {
     private long nbr_dislikes_com;
     @Temporal(TemporalType.DATE)
     private Date date_of_comm_post;
-
+    @JsonIgnore
     @ManyToOne
     Publication publication;
-
+    @JsonIgnore
     @ManyToOne
     Student studentss;
 
