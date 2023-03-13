@@ -1,6 +1,7 @@
 package com.example.pidev1.Service;
 
 import com.example.pidev1.Entity.*;
+import com.example.pidev1.Entity.Class;
 import com.example.pidev1.Repository.LessonRepo;
 import com.example.pidev1.Repository.ScheduleRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,14 +45,18 @@ public class ScheduleService {
             for (Employers enseignant : employerDisponibles) {
                 if (enseignant.getSubject().getIdSubject().equals(subject.getIdSubject())) {
                     enseignantDisponible = enseignant;
+                    enseignantDisponible.setIsDispo(false);
                     break;
                 }
             }
+
+            Class cc = enseignantDisponible.getClasses().stream().findAny().get();
             // Trouver la salle de classe disponible pour cette matière
             classroom salleDisponible = null;
             for (classroom salle : classroomDisponibles) {
                 if (salle.getCapacity() >= 20) {
-                    salleDisponible = salle;
+                    salleDisponible = classroomDisponibles.stream().findAny().get();
+                    salleDisponible.setIsDispo(false);
                     break;
                }
                // salleDisponible = classroomDisponibles.stream().findAny().get();
@@ -62,7 +67,7 @@ public class ScheduleService {
             coursPlanifie.setEmployer(enseignantDisponible);
             coursPlanifie.setClassroom(salleDisponible);
             coursPlanifie.setSubject(subject);
-            coursPlanifie.setAClass(enseignantDisponible.getClasses().stream().findAny().get());
+            coursPlanifie.setAClass(cc);
             coursPlanifie.setStart(LocalTime.of(8,00));
             coursPlanifie.setEnd((LocalTime.MAX.plusHours(10)));
             LessonPlanifies.add(coursPlanifie);

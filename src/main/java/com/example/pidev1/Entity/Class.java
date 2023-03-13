@@ -22,6 +22,7 @@ public class Class implements Serializable {
     @Column(name="idClass")
     private Long idClass;
     private String Name;
+    private Long Capacity;
 
     @ManyToMany(mappedBy="classes", cascade = CascadeType.ALL)
     @JsonIgnore

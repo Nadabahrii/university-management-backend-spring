@@ -8,6 +8,8 @@ import com.example.pidev1.Repository.LessonRepo;
 import com.example.pidev1.Repository.StudentRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,6 +19,9 @@ import java.util.List;
 public class AbsenceServices {
     @Autowired
     AbsenceRepo absenceRepo;
+
+    @Autowired
+    private JavaMailSender mailSender;
 
     @Autowired
     StudentRepository studentRepository;
@@ -55,6 +60,21 @@ public class AbsenceServices {
         return absenceRepo.findByValidee(false);
     }
 
+    public void sendEmail(String toEmail,
+                          String subject,
+                          String body
+    ) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom("mohamed.dhokkar@esprit.tn");
+        message.setTo(toEmail);
+        message.setText(body);
+        message.setSubject(subject);
+        mailSender.send(message);
+        System.out.println("Mail Send...");
+
+
+    }
+
     // Vérifie si un étudiant a dépassé le seuil d'absence maximum
 
     public Student verifierSeuilAbsence(Student student) {
@@ -75,6 +95,12 @@ public class AbsenceServices {
                 // Appliquer une sanction de perte de 6 points
                 student.setCredie(student.getCredie() - 10);
                 studentRepository.save(student);
+            }
+            if(student.getCredie()==0)
+            {
+                String subject = "alert";
+                String body = "alert";
+                sendEmail(student.getEmail(), subject, body);
             }
        // absenceRepo.deleteAbsenceByStudent(student);
 
