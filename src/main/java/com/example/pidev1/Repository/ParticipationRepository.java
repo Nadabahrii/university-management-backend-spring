@@ -1,4 +1,9 @@
 package com.example.pidev1.Repository;
 
-public interface ParticipationRepository {
+import com.example.pidev1.Entity.Participation;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface ParticipationRepository extends JpaRepository<Participation,Long> {
 }
