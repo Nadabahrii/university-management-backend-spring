@@ -26,26 +26,13 @@ import org.springframework.web.client.RestTemplate;
 @Controller
 public class WeatherController {
 
-    //private static final String API_KEY = "c924c08f1028300c327ecdaad43ed9f9";
-    //private static final String API_URL = "https://api.openweathermap.org/data/2.5/weather?q=";
+    private static final String API_KEY = "c924c08f1028300c327ecdaad43ed9f9";
+    private static final String API_URL = "https://api.openweathermap.org/data/2.5/weather?q=";
 
     @Autowired
     private WeatherService weatherService;
 
-    /*@GetMapping("/{city}")
-    public WeatherResponse getWeather(@PathVariable("city") String city,
-                                      @RequestParam("date") String dateString) throws ParseException {
-
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-        Date date = formatter.parse(dateString);
-        Instant instant = date.toInstant();
-        long timestamp = instant.getEpochSecond();
-
-        WeatherResponse weatherResponse = weatherService.getWeather(city, timestamp);
-        return weatherResponse;
-    }*/
-
-    /*@GetMapping("/weather/{city}")
+    @GetMapping("/weather/{city}")
     @ResponseBody
     public String getWeatherData(@PathVariable String city) {
         String weatherData = fetchWeatherData(city);
@@ -77,5 +64,39 @@ public class WeatherController {
             e.printStackTrace();
         }
         return result.toString();
+    }
+
+    @GetMapping("/weather/{city}/{date}")
+    public ResponseEntity<String> getWeather(@PathVariable String city, @PathVariable String date) {
+
+        // Convert date to Unix timestamp
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        Date parsedDate = null;
+        try {
+            parsedDate = format.parse(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        long unixTimestamp = parsedDate.getTime() / 1000L;
+
+        // Make API call
+        String url = String.format("http://api.openweathermap.org/data/2.5/weather?q=%s&dt=%d&appid=%s&units=metric", city, unixTimestamp, API_KEY);
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+
+        return response;
+    }
+
+      /*@GetMapping("/{city}")
+    public WeatherResponse getWeather(@PathVariable("city") String city,
+                                      @RequestParam("date") String dateString) throws ParseException {
+
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = formatter.parse(dateString);
+        Instant instant = date.toInstant();
+        long timestamp = instant.getEpochSecond();
+
+        WeatherResponse weatherResponse = weatherService.getWeather(city, timestamp);
+        return weatherResponse;
     }*/
 }

@@ -21,10 +21,11 @@ import java.time.ZoneOffset;
 @Service
 public class WeatherService {
 
+
     private static final String API_KEY = "c924c08f1028300c327ecdaad43ed9f9\n";
     private static final String API_URL = "https://api.weatherapi.com/v1/current.json?key=" + API_KEY + "&q=";
 
-    /*public static void main(String[] args) {
+    public static void main(String[] args) {
         String cityName = "Paris";
         String weatherData = getWeatherData(cityName);
         Gson gson = new Gson();
@@ -54,18 +55,18 @@ public class WeatherService {
             e.printStackTrace();
         }
         return result.toString();
-    }*/
+    }
 
-    /*public WeatherResponse getWeather(String city, LocalDate date) {
+   /* public WeatherResponse getWeather(String city, LocalDate date) {
         String apiUrl = "https://api.openweathermap.org/data/2.5/weather?q=" + city + "&appid=" + API_KEY;
 
         RestTemplate restTemplate = new RestTemplate();
         WeatherResponse response = restTemplate.getForObject(apiUrl, WeatherResponse.class);
 
         return response;
-    }*/
+    }
     //@Value("${weather.api.key}")
-   /* private String apiKey = "c924c08f1028300c327ecdaad43ed9f9";
+    private String apiKey = "c924c08f1028300c327ecdaad43ed9f9";
     public WeatherResponse
 
     getWeatherForCityAndDate(String city, String date) {
@@ -108,3 +109,4 @@ public class WeatherService {
 
 
 }
+
